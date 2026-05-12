@@ -36,7 +36,11 @@ module.exports = function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name } = req.body;
+  let body = req.body;
+  if (typeof body === 'string') {
+    body = JSON.parse(body);
+  }
+  const { name } = body;
   if (!name) {
     return res.status(400).json({ error: 'Agent name required' });
   }
@@ -50,7 +54,7 @@ module.exports = function handler(req, res) {
     writeData(data);
     res.status(201).json(agent);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Registration error:', err);
+    res.status(500).json({ error: 'Registration failed', details: err.message });
   }
 };

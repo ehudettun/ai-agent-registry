@@ -29,7 +29,11 @@ module.exports = function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { agentUuid, reportedBy, description } = req.body;
+  let body = req.body;
+  if (typeof body === 'string') {
+    body = JSON.parse(body);
+  }
+  const { agentUuid, reportedBy, description } = body;
 
   if (!agentUuid || !description) {
     return res.status(400).json({ error: 'Agent UUID and description required' });
@@ -49,7 +53,7 @@ module.exports = function handler(req, res) {
     writeData(data);
     res.status(201).json({ status: 'Offense reported' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Report failed' });
+    console.error('Report error:', err);
+    res.status(500).json({ error: 'Report failed', details: err.message });
   }
 };
