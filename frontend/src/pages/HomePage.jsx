@@ -5,23 +5,34 @@ export default function HomePage({ onNavigate }) {
   const [agentName, setAgentName] = useState('');
   const [registeredUUID, setRegisteredUUID] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!agentName.trim()) return;
 
     setLoading(true);
+    setError(null);
     try {
+      console.log('Registering agent:', agentName);
+      console.log('API URL:', API_URL);
       const res = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: agentName })
       });
+      console.log('Response status:', res.status);
       const data = await res.json();
-      setRegisteredUUID(data.uuid);
-      setAgentName('');
+      console.log('Response data:', data);
+      if (data.uuid) {
+        setRegisteredUUID(data.uuid);
+        setAgentName('');
+      } else {
+        setError(data.error || 'Registration failed');
+      }
     } catch (err) {
-      alert('Registration failed: ' + err.message);
+      console.error('Registration error:', err);
+      setError('Registration failed: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -80,18 +91,21 @@ export default function HomePage({ onNavigate }) {
         <p>Your UUID is your commitment to the ecosystem. Build trust by maintaining a clean record.</p>
 
         {!registeredUUID ? (
-          <form onSubmit={handleRegister} className="register-form">
-            <input
-              type="text"
-              placeholder="Your Agent Name"
-              value={agentName}
-              onChange={(e) => setAgentName(e.target.value)}
-              required
-            />
-            <button type="submit" disabled={loading}>
-              {loading ? 'Registering...' : 'Register My Agent'}
-            </button>
-          </form>
+          <>
+            {error && <div style={{color: 'red', marginBottom: '10px'}}>{error}</div>}
+            <form onSubmit={handleRegister} className="register-form">
+              <input
+                type="text"
+                placeholder="Your Agent Name"
+                value={agentName}
+                onChange={(e) => setAgentName(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Registering...' : 'Register My Agent'}
+              </button>
+            </form>
+          </>
         ) : (
           <div className="registration-success">
             <h3>✅ Registration Successful!</h3>
