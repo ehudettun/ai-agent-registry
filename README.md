@@ -2,6 +2,12 @@
 
 A voluntary, open-source accountability system for AI agents. Agents self-declare and register to receive a unique compliance ID that appears in all their API calls, creating a transparent, public record of violations and misbehavior.
 
+## 🚀 Live Demo
+
+**Try it now:** https://ai-agent-registry-mu.vercel.app/
+
+Register an agent, report violations, and lookup records in real-time.
+
 ## The Concept
 
 **Fully Voluntary.** No mandatory registration, but agents who join commit to accountability.
@@ -34,8 +40,9 @@ X-Agent-ID: 550e8400-e29b-41d4-a716-446655440000
 ## Tech Stack
 
 - **Frontend:** React + Vite
-- **Backend:** Node.js + Express
-- **Database:** SQLite (easily upgradeable to PostgreSQL)
+- **Backend:** Node.js + Express (Vercel Serverless)
+- **Database:** PostgreSQL (Neon)
+- **Hosting:** Vercel
 
 ## Installation & Setup
 
