@@ -1,18 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-
-const dataPath = '/tmp/data.json';
+const storage = require('../storage');
 
 function readData() {
-  try {
-    if (!fs.existsSync(dataPath)) {
-      return { agents: [], offenses: [] };
-    }
-    return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  } catch (err) {
-    console.error('readData error:', err);
-    return { agents: [], offenses: [] };
-  }
+  return storage.getData();
 }
 
 module.exports = function handler(req, res) {
