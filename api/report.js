@@ -1,14 +1,9 @@
 const storage = require('./storage');
 
-function readData() {
-  return storage.getData();
-}
+const readData = storage.getData;
+const writeData = storage.setData;
 
-function writeData(data) {
-  storage.setData(data);
-}
-
-module.exports = function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -41,9 +36,9 @@ module.exports = function handler(req, res) {
   };
 
   try {
-    const data = readData();
+    const data = await readData();
     data.offenses.push(offense);
-    writeData(data);
+    await writeData(data);
     res.status(201).json({ status: 'Offense reported' });
   } catch (err) {
     console.error('Report error:', err);

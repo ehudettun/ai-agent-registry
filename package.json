@@ -5,5 +5,7 @@
   "scripts": {
     "build": "cd frontend && npm install && npm run build"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@vercel/kv": "^0.2.1"
+  }
 }
