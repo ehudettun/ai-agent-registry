@@ -1,9 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
-import sqlite3 from 'sqlite3';
-import { resolve } from 'path';
+const { v4: uuidv4 } = require('uuid');
+const sqlite3 = require('sqlite3').verbose();
+const { resolve } = require('path');
 
 const dbPath = resolve('./registry.db');
-
 const db = new sqlite3.Database(dbPath);
 
 // Ensure tables exist
@@ -18,7 +17,7 @@ db.serialize(() => {
   `);
 });
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -50,4 +49,4 @@ export default function handler(req, res) {
     }
     res.status(201).json({ uuid, name, createdAt: new Date() });
   });
-}
+};

@@ -1,5 +1,5 @@
-import sqlite3 from 'sqlite3';
-import { resolve } from 'path';
+const sqlite3 = require('sqlite3').verbose();
+const { resolve } = require('path');
 
 const dbPath = resolve('./registry.db');
 const db = new sqlite3.Database(dbPath);
@@ -18,7 +18,7 @@ db.serialize(() => {
   `);
 });
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -52,4 +52,4 @@ export default function handler(req, res) {
       res.status(201).json({ status: 'Offense reported' });
     }
   );
-}
+};
