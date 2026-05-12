@@ -1,31 +1,25 @@
-const sqlite3 = require('sqlite3').verbose();
-const { resolve } = require('path');
+const fs = require('fs');
+const path = require('path');
 
-const dbPath = resolve('./registry.db');
-const db = new sqlite3.Database(dbPath);
+const dataPath = path.join(process.cwd(), 'data.json');
 
-// Ensure tables exist
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS offenses (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      agentUuid TEXT NOT NULL,
-      reportedBy TEXT,
-      description TEXT NOT NULL,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-      resolution TEXT
-    )
-  `);
-});
+function readData() {
+  try {
+    return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } catch {
+    return { agents: [], offenses: [] };
+  }
+}
+
+function writeData(data) {
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+}
 
 module.exports = function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -41,15 +35,21 @@ module.exports = function handler(req, res) {
     return res.status(400).json({ error: 'Agent UUID and description required' });
   }
 
-  db.run(
-    'INSERT INTO offenses (agentUuid, reportedBy, description) VALUES (?, ?, ?)',
-    [agentUuid, reportedBy || 'Anonymous', description],
-    (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Report failed' });
-      }
-      res.status(201).json({ status: 'Offense reported' });
-    }
-  );
+  const offense = {
+    id: Date.now().toString(),
+    agentUuid,
+    reportedBy: reportedBy || 'Anonymous',
+    description,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    const data = readData();
+    data.offenses.push(offense);
+    writeData(data);
+    res.status(201).json({ status: 'Offense reported' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Report failed' });
+  }
 };

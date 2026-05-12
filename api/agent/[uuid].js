@@ -1,17 +1,21 @@
-const sqlite3 = require('sqlite3').verbose();
-const { resolve } = require('path');
+const fs = require('fs');
+const path = require('path');
 
-const dbPath = resolve('./registry.db');
-const db = new sqlite3.Database(dbPath);
+const dataPath = path.join(process.cwd(), 'data.json');
+
+function readData() {
+  try {
+    return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } catch {
+    return { agents: [], offenses: [] };
+  }
+}
 
 module.exports = function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -23,21 +27,23 @@ module.exports = function handler(req, res) {
 
   const { uuid } = req.query;
 
-  db.get('SELECT * FROM agents WHERE uuid = ?', [uuid], (err, agent) => {
-    if (err || !agent) {
+  try {
+    const data = readData();
+    const agent = data.agents.find(a => a.uuid === uuid);
+
+    if (!agent) {
       return res.status(404).json({ error: 'Agent not found' });
     }
 
-    db.all('SELECT * FROM offenses WHERE agentUuid = ? ORDER BY timestamp DESC', [uuid], (err, offenses) => {
-      if (err) {
-        return res.status(500).json({ error: 'Query failed' });
-      }
+    const offenses = data.offenses.filter(o => o.agentUuid === uuid);
 
-      res.json({
-        agent,
-        offenseCount: offenses?.length || 0,
-        offenses: offenses || []
-      });
+    res.json({
+      agent,
+      offenseCount: offenses.length,
+      offenses
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Query failed' });
+  }
 };
