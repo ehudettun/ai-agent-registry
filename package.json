@@ -5,5 +5,7 @@
   "scripts": {
     "build": "cd frontend && npm install && npm run build"
   },
-  "dependencies": {}
+  "dependencies": {
+    "pg": "^8.11.2"
+  }
 }
