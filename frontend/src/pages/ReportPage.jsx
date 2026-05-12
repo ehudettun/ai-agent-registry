@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from '../api';
 
 export default function ReportPage() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function ReportPage() {
     }
 
     try {
-      const res = await fetch('http://localhost:3001/api/report', {
+      const res = await fetch(`${API_URL}/api/report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

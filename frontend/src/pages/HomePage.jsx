@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from '../api';
 
 export default function HomePage({ onNavigate }) {
   const [agentName, setAgentName] = useState('');
@@ -11,7 +12,7 @@ export default function HomePage({ onNavigate }) {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/register', {
+      const res = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: agentName })

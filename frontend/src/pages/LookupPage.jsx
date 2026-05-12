@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from '../api';
 
 export default function LookupPage() {
   const [uuid, setUuid] = useState('');
@@ -17,7 +18,7 @@ export default function LookupPage() {
     setSearched(true);
 
     try {
-      const res = await fetch(`http://localhost:3001/api/agent/${uuid}`);
+      const res = await fetch(`${API_URL}/api/agent/${uuid}`);
       if (!res.ok) {
         throw new Error('Agent not found');
       }

@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "devCommand": "cd frontend && npm run dev",
+  "env": {
+    "VITE_API_URL": {
+      "default": "http://localhost:3001",
+      "production": "@api_url"
+    }
+  }
+}
