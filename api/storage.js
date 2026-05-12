@@ -1,29 +1,10 @@
-const { kv } = require('@vercel/kv');
+let data = { agents: [], offenses: [] };
 
-const AGENTS_KEY = 'agents';
-const OFFENSES_KEY = 'offenses';
-
-async function getData() {
-  try {
-    const agents = (await kv.get(AGENTS_KEY)) || [];
-    const offenses = (await kv.get(OFFENSES_KEY)) || [];
-    return { agents, offenses };
-  } catch (err) {
-    console.error('KV read error:', err);
-    return { agents: [], offenses: [] };
+module.exports = {
+  getData() {
+    return data;
+  },
+  setData(newData) {
+    data = newData;
   }
-}
-
-async function setData(data) {
-  try {
-    await Promise.all([
-      kv.set(AGENTS_KEY, data.agents),
-      kv.set(OFFENSES_KEY, data.offenses)
-    ]);
-  } catch (err) {
-    console.error('KV write error:', err);
-    throw err;
-  }
-}
-
-module.exports = { getData, setData };
+};

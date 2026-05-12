@@ -1,8 +1,10 @@
 const storage = require('../storage');
 
-const readData = storage.getData;
+function readData() {
+  return storage.getData();
+}
 
-module.exports = async function handler(req, res) {
+module.exports = function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -19,7 +21,7 @@ module.exports = async function handler(req, res) {
   const { uuid } = req.query;
 
   try {
-    const data = await readData();
+    const data = readData();
     const agent = data.agents.find(a => a.uuid === uuid);
 
     if (!agent) {
