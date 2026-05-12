@@ -5,8 +5,12 @@ const dataPath = '/tmp/data.json';
 
 function readData() {
   try {
+    if (!fs.existsSync(dataPath)) {
+      return { agents: [], offenses: [] };
+    }
     return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.error('readData error:', err);
     return { agents: [], offenses: [] };
   }
 }

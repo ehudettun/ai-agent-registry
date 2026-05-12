@@ -12,8 +12,12 @@ const dataPath = '/tmp/data.json';
 
 function readData() {
   try {
+    if (!fs.existsSync(dataPath)) {
+      return { agents: [], offenses: [] };
+    }
     return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.error('readData error:', err);
     return { agents: [], offenses: [] };
   }
 }
@@ -37,6 +41,9 @@ module.exports = function handler(req, res) {
   }
 
   let body = req.body;
+  if (!body) {
+    return res.status(400).json({ error: 'Request body required' });
+  }
   if (typeof body === 'string') {
     body = JSON.parse(body);
   }
