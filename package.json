@@ -1,0 +1,9 @@
+{
+  "name": "ai-agent-registry",
+  "version": "1.0.0",
+  "description": "Open-source accountability registry for AI agents",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build"
+  },
+  "dependencies": {}
+}
