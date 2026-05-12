@@ -8,7 +8,7 @@ function generateUUID() {
   });
 }
 
-const dataPath = path.join(process.cwd(), 'data.json');
+const dataPath = '/tmp/data.json';
 
 function readData() {
   try {

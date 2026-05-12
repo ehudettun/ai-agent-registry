@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const dataPath = path.join(process.cwd(), 'data.json');
+const dataPath = '/tmp/data.json';
 
 function readData() {
   try {
